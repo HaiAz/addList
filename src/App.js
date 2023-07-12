@@ -7,17 +7,16 @@ function App() {
   const [mathScore, setMathScore] = useState()
   const [physicsScore, setPhysicsScore] = useState()
   const [chemistryScore, setChemistryScore] = useState()
-
   const [list, setList] = useState([])
-  const [arrangeList, setArrangeList] = useState([])
+  const [arrangeList, setArrangeList] = useState(list)
+  
   //get value
-  const getInputValue = (a, b, c) => {
-    const x = Number(a)
-    const y = Number(b)
-    const z = Number(c)
+  const getInputValue = () => {
+    const x = Number(mathScore)
+    const y = Number(physicsScore)
+    const z = Number(chemistryScore)
     const averageScore = ((x + y + z) / 3).toFixed(2)
-
-    setList([
+    const arr = [
       ...list,
       {
         studentCode,
@@ -28,9 +27,10 @@ function App() {
         chemistryScore,
         averageScore,
       },
-    ])
+    ];
 
-    setArrangeList(arrangeList)
+    setList(arr)
+    setArrangeList(arr)
     setStudentCode("")
     setName("")
     setClassName("")
@@ -44,7 +44,7 @@ function App() {
     if (list.length === 0) {
       alert("There's nothing left in this list")
     }
-    setList(list.slice(1))
+    setArrangeList(list.slice(1))
   }
 
   //Stack
@@ -52,16 +52,24 @@ function App() {
     if (list.length === 0) {
       alert("There's nothing left in this list")
     }
-    setList(list.slice(0, -1))
+    setArrangeList(list.slice(0, -1))
   }
 
   //delete item in arr
   const deleteItem = (id) => {
-    setList((prev) => prev.filter((item) => item.studentCode !== id))
+    console.log(id);
+    const arr = list.filter(item => item.id !== id);
+    console.log("arr:", arr);
+    setList(arr)
+    setArrangeList(arr)
   }
 
   //edit select item value
   const editItem = (id) => {
+    const x = Number(mathScore)
+    const y = Number(physicsScore)
+    const z = Number(chemistryScore)
+    const averageScore = ((x + y + z) / 3).toFixed(2)
     const newArr = list.map((item) => {
       if (item.studentCode === id) {
         return {
@@ -72,12 +80,14 @@ function App() {
           mathScore,
           physicsScore,
           chemistryScore,
+          averageScore
         }
       }
       return item
     })
 
     setList(newArr)
+    setArrangeList(newArr)
     setStudentCode("")
     setName("")
     setClassName("")
@@ -86,7 +96,26 @@ function App() {
     setChemistryScore("")
   }
 
-  // const handleArrangeList = (value) => {}
+  const handleArrangeList = (value) => {
+    switch (value) {
+      case "normal":
+        setArrangeList(list);
+      break;
+
+      case "increase":
+        const asc = [...list].sort((a, b) => a.averageScore - b.averageScore);
+        setArrangeList(asc);
+      break;
+
+      case "decrease":
+        const desc = [...list].sort((a, b) => b.averageScore - a.averageScore);
+        setArrangeList(desc);
+      break;
+
+      default:
+        break;
+    }
+  }
 
   //move item up
   const handleMoveItemUp = (index) => {
@@ -94,9 +123,9 @@ function App() {
       alert("Can't move this item!")
       return
     }
-    const arr = list
+    const arr = arrangeList
     const newArr = arrayMoveImmutable(arr, index, index - 1)
-    setList(newArr)
+    setArrangeList(newArr)
   }
 
   //move item down
@@ -105,9 +134,9 @@ function App() {
       alert("Can't move this item!")
       return
     }
-    const arr = list
+    const arr = arrangeList
     const newArr = arrayMoveImmutable(arr, index, index + 1)
-    setList(newArr)
+    setArrangeList(newArr)
   }
 
   return (
@@ -253,7 +282,8 @@ function App() {
       {!!list?.length && (
         <div className="text-center mt-5 uppercase font-bold">
           <p className="text-2xl">list Element</p>
-          {/* <select
+
+          <select
             className="select select-bordered w-full max-w-xs mt-5"
             defaultValue={"normal"}
             onChange={(e) => handleArrangeList(e.target.value)}
@@ -261,7 +291,8 @@ function App() {
             <option value="normal">Normal</option>
             <option value="increase">Increase</option>
             <option value="decrease">Decrease</option>
-          </select> */}
+          </select>
+
           <div className="overflow-x-auto">
             <table className="table text-center mx-auto mt-5">
               <thead className="">
@@ -277,7 +308,7 @@ function App() {
                 </tr>
               </thead>
               <tbody>
-                {list.map((item, i) => (
+                {arrangeList?.map((item, i) => (
                   <tr key={i}>
                     <td>{item.studentCode}</td>
                     <td>{item.name}</td>
