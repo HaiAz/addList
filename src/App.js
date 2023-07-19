@@ -1,42 +1,75 @@
-import react, { useState } from "react"
+import { useState } from "react"
 import { arrayMoveImmutable } from "array-move"
+import { Formik, Form, Field, useFormik } from "formik"
+import * as yup from "yup"
+
 function App() {
-  const [studentCode, setStudentCode] = useState()
-  const [name, setName] = useState()
-  const [className, setClassName] = useState()
-  const [mathScore, setMathScore] = useState()
-  const [physicsScore, setPhysicsScore] = useState()
-  const [chemistryScore, setChemistryScore] = useState()
   const [list, setList] = useState([])
-  const [arrangeList, setArrangeList] = useState(list)
-  
-  //get value
+  const [studentInfo, setStudentInfo] = useState({
+    studentCode: "",
+    studentName: "",
+    className: "",
+    math: "",
+    physics: "",
+    chemistry: "",
+  })
+
+  const formik = useFormik({
+    initialValues: {
+      studentCode: "",
+      studentName: "",
+      className: "",
+      math: "",
+      physics: "",
+      chemistry: "",
+    },
+
+    validationSchema: yup.object().shape({
+      studentCode: yup
+        .number()
+        .min(6, "Student code must be 6 characters!")
+        .max(6, "Student code must be 6 characters!")
+        .required("Please enter student code!"),
+      studentName: yup.string().min(6).max(50, "Too long!").required("Please enter student name!"),
+      className: yup.string().min(3).max(50).required("Please enter class!"),
+      math: yup.number().required("Math score required!"),
+      physics: yup.number().required("Math physics required!"),
+      chemistry: yup.number().required("Chemistry score required!"),
+    }),
+
+    onSubmit: (values) => {
+      console.log("123123")
+      console.log("values: ", values)
+    },
+  })
+
+  //get input value and set value to student info
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setStudentInfo((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
+  }
+
+  //get student info and add to list
   const getInputValue = () => {
-    const x = Number(mathScore)
-    const y = Number(physicsScore)
-    const z = Number(chemistryScore)
+    const x = Number(studentInfo.math)
+    const y = Number(studentInfo.physics)
+    const z = Number(studentInfo.chemistry)
     const averageScore = ((x + y + z) / 3).toFixed(2)
-    const arr = [
-      ...list,
-      {
-        studentCode,
-        name,
-        className,
-        mathScore,
-        physicsScore,
-        chemistryScore,
-        averageScore,
-      },
-    ];
+    const timestamp = new Date().getTime()
+    const arr = [...list, { ...studentInfo, averageScore, timestamp }]
 
     setList(arr)
-    setArrangeList(arr)
-    setStudentCode("")
-    setName("")
-    setClassName("")
-    setMathScore("")
-    setPhysicsScore("")
-    setChemistryScore("")
+    setStudentInfo({
+      studentCode: "",
+      studentName: "",
+      className: "",
+      math: "",
+      physics: "",
+      chemistry: "",
+    })
   }
 
   //Queue
@@ -44,7 +77,7 @@ function App() {
     if (list.length === 0) {
       alert("There's nothing left in this list")
     }
-    setArrangeList(list.slice(1))
+    setList(list.slice(1))
   }
 
   //Stack
@@ -52,68 +85,61 @@ function App() {
     if (list.length === 0) {
       alert("There's nothing left in this list")
     }
-    setArrangeList(list.slice(0, -1))
+    setList(list.slice(0, -1))
   }
 
   //delete item in arr
   const deleteItem = (id) => {
-    console.log(id);
-    const arr = list.filter(item => item.id !== id);
-    console.log("arr:", arr);
+    console.log(id)
+    const arr = list.filter((item) => item.id !== id)
+    console.log("arr:", arr)
     setList(arr)
-    setArrangeList(arr)
   }
 
   //edit select item value
   const editItem = (id) => {
-    const x = Number(mathScore)
-    const y = Number(physicsScore)
-    const z = Number(chemistryScore)
+    const x = Number(studentInfo.math)
+    const y = Number(studentInfo.physics)
+    const z = Number(studentInfo.chemistry)
     const averageScore = ((x + y + z) / 3).toFixed(2)
     const newArr = list.map((item) => {
       if (item.studentCode === id) {
         return {
           ...item,
-          studentCode,
-          name,
-          className,
-          mathScore,
-          physicsScore,
-          chemistryScore,
-          averageScore
+          studentCode: studentInfo.studentCode,
+          studentName: studentInfo.studentName,
+          className: studentInfo.className,
+          math: studentInfo.math,
+          physics: studentInfo.physics,
+          chemistry: studentInfo.chemistry,
+          averageScore: averageScore,
         }
       }
       return item
     })
 
     setList(newArr)
-    setArrangeList(newArr)
-    setStudentCode("")
-    setName("")
-    setClassName("")
-    setMathScore("")
-    setPhysicsScore("")
-    setChemistryScore("")
   }
 
   const handleArrangeList = (value) => {
     switch (value) {
       case "normal":
-        setArrangeList(list);
-      break;
+        const normal = [...list].sort((a, b) => a.timestamp - b.timestamp)
+        setList(normal)
+        break
 
       case "increase":
-        const asc = [...list].sort((a, b) => a.averageScore - b.averageScore);
-        setArrangeList(asc);
-      break;
+        const incs = [...list].sort((a, b) => a.averageScore - b.averageScore)
+        setList(incs)
+        break
 
       case "decrease":
-        const desc = [...list].sort((a, b) => b.averageScore - a.averageScore);
-        setArrangeList(desc);
-      break;
+        const desc = [...list].sort((a, b) => b.averageScore - a.averageScore)
+        setList(desc)
+        break
 
       default:
-        break;
+        break
     }
   }
 
@@ -123,9 +149,8 @@ function App() {
       alert("Can't move this item!")
       return
     }
-    const arr = arrangeList
-    const newArr = arrayMoveImmutable(arr, index, index - 1)
-    setArrangeList(newArr)
+    const newArr = arrayMoveImmutable(list, index, index - 1)
+    setList(newArr)
   }
 
   //move item down
@@ -134,137 +159,118 @@ function App() {
       alert("Can't move this item!")
       return
     }
-    const arr = arrangeList
-    const newArr = arrayMoveImmutable(arr, index, index + 1)
-    setArrangeList(newArr)
+    const newArr = arrayMoveImmutable(list, index, index + 1)
+    setList(newArr)
   }
 
   return (
     <div className="App font-mono">
-      <div className="flex justify-around w-screen">
-        <div>
-          <div className="form-control w-full max-w-xs">
+      {/* Form input */}
+      <form onSubmit={formik.handleSubmit}>
+        <div className="flex justify-around w-screen">
+          <div>
             {/* Student Code */}
-            <label className="label">
-              <span className="label-text">Student Code</span>
-            </label>
-            <input
-              value={studentCode}
-              type="text"
-              placeholder="Student Code"
-              className="input input-bordered w-96 max-w-xs mb-5"
-              onChange={(e) => setStudentCode(e.target.value)}
-            />
-            {studentCode === "" && (
-              <label className="label">
-                <span className="label-text text-red-500">Please Enter Student Code</span>
+            <div className="form-control w-full max-w-xs">
+              <label className="label" htmlFor="studentCode">
+                Student Code
               </label>
-            )}
-          </div>
+              <input
+                id="studentCode"
+                name="studentCode"
+                value={formik.values.studentCode}
+                onChange={formik.handleChange}
+                type="text"
+                placeholder="Student Code"
+                className="input input-bordered w-96 max-w-xs mb-5"
+              />
+            </div>
 
-          <div className="form-control w-full max-w-xs">
             {/* Student Name */}
-            <label className="label">
-              <span className="label-text">Name</span>
-            </label>
-            <input
-              value={name}
-              type="text"
-              placeholder="Student Name"
-              className="input input-bordered w-96 max-w-xs mb-5"
-              onChange={(e) => setName(e.target.value)}
-            />
-            {name === "" && (
-              <label className="label">
-                <span className="label-text text-red-500">Please Enter Student Name</span>
+            <div className="form-control w-full max-w-xs">
+              <label className="label" htmlFor="studentName">
+                Name
               </label>
-            )}
-          </div>
+              <input
+                id="studentName"
+                name="studentName"
+                value={formik.values.studentName}
+                onChange={formik.handleChange}
+                type="text"
+                placeholder="Student Name"
+                className="input input-bordered w-96 max-w-xs mb-5"
+              />
+            </div>
 
-          <div className="form-control w-full max-w-xs">
             {/* Class Name */}
-            <label className="label">
-              <span className="label-text">Class</span>
-            </label>
-            <input
-              value={className}
-              type="text"
-              placeholder="Class"
-              className="input input-bordered w-96 max-w-xs mb-5"
-              onChange={(e) => setClassName(e.target.value)}
-            />
-            {className === "" && (
-              <label className="label">
-                <span className="label-text text-red-500">Please Enter Class Name</span>
+            <div className="form-control w-full max-w-xs">
+              <label className="label" htmlFor="className">
+                Class
               </label>
-            )}
+              <input
+                id="className"
+                name="className"
+                value={formik.values.className}
+                onChange={formik.handleChange}
+                type="text"
+                placeholder="Class"
+                className="input input-bordered w-96 max-w-xs mb-5"
+              />
+            </div>
           </div>
-        </div>
-        <div>
-          <div className="form-control w-full max-w-xs">
+          <div>
             {/* Math Score */}
-            <label className="label">
-              <span className="label-text">Math Score</span>
-            </label>
-            <input
-              value={mathScore}
-              type="text"
-              placeholder="Math Score"
-              className="input input-bordered w-96 max-w-xs mb-5"
-              onChange={(e) => setMathScore(e.target.value)}
-            />
-            {mathScore === "" && (
+            <div className="form-control w-full max-w-xs">
               <label className="label">
-                <span className="label-text text-red-500">Please Enter Math Score</span>
+                <span className="label-text">Math Score</span>
               </label>
-            )}
-          </div>
+              <input
+                name="math"
+                value={formik.values.math}
+                onChange={formik.handleChange}
+                type="text"
+                placeholder="Math Score"
+                className="input input-bordered w-96 max-w-xs mb-5"
+              />
+            </div>
 
-          <div className="form-control w-full max-w-xs">
             {/* Physics Score */}
-            <label className="label">
-              <span className="label-text">Physics Score</span>
-            </label>
-            <input
-              value={physicsScore}
-              type="text"
-              placeholder="Physics Score"
-              className="input input-bordered w-96 max-w-xs mb-5"
-              onChange={(e) => setPhysicsScore(e.target.value)}
-            />
-            {physicsScore === "" && (
+            <div className="form-control w-full max-w-xs">
               <label className="label">
-                <span className="label-text text-red-500">Please Enter Physics Score</span>
+                <span className="label-text">Physics Score</span>
               </label>
-            )}
-          </div>
+              <input
+                name="physics"
+                value={formik.values.physics}
+                onChange={formik.handleChange}
+                type="text"
+                placeholder="Physics Score"
+                className="input input-bordered w-96 max-w-xs mb-5"
+              />
+            </div>
 
-          <div className="form-control w-full max-w-xs">
             {/* Chemistry Score */}
-            <label className="label">
-              <span className="label-text">Chemistry Score</span>
-            </label>
-            <input
-              value={chemistryScore}
-              type="text"
-              placeholder="Physics Score"
-              className="input input-bordered w-96 max-w-xs mb-5"
-              onChange={(e) => setChemistryScore(e.target.value)}
-            />
-            {chemistryScore === "" && (
-              <label className="label">
-                <span className="label-text text-red-500">Please Enter Chemistry Score</span>
-              </label>
-            )}
+            <div className="form-control w-full max-w-xs">
+              <label className="label">Chemistry Score</label>
+              <input
+                name="chemistry"
+                value={formik.values.chemistry}
+                onChange={formik.handleChange}
+                type="text"
+                placeholder="Physics Score"
+                className="input input-bordered w-96 max-w-xs mb-5"
+              />
+            </div>
           </div>
         </div>
-      </div>
-      <button
-        className="btn btn-outline w-64 flex mx-auto"
-        onClick={() => getInputValue(mathScore, physicsScore, chemistryScore)}
-      >
-        ADD
-      </button>
+        <input
+          type="submit"
+          className="btn btn-outline w-64 flex mx-auto"
+          id="Add"
+          name="Add"
+          value="Add"
+        />
+      </form>
+
       <div className="flex justify-center mt-5">
         <div className="mr-40">
           <button className="btn btn-outline btn-primary" onClick={handleQueue}>
@@ -308,14 +314,14 @@ function App() {
                 </tr>
               </thead>
               <tbody>
-                {arrangeList?.map((item, i) => (
+                {list?.map((item, i) => (
                   <tr key={i}>
                     <td>{item.studentCode}</td>
-                    <td>{item.name}</td>
+                    <td>{item.studentName}</td>
                     <td>{item.className}</td>
-                    <td>{item.mathScore}</td>
-                    <td>{item.physicsScore}</td>
-                    <td>{item.chemistryScore}</td>
+                    <td>{item.math}</td>
+                    <td>{item.physics}</td>
+                    <td>{item.chemistry}</td>
                     <td>{item.averageScore}</td>
                     <td>
                       <button
