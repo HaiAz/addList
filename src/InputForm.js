@@ -1,11 +1,11 @@
-import React from "react"
+import React, { useState } from "react"
+import List from "./List"
 import { Formik, Form, Field, useFormik } from "formik"
 import * as yup from "yup"
-import useAppContext from "./AppProvider"
-
+import { useAppContext } from "./context/AppProvider"
 function InputForm() {
-  const { getListStudent, setListStudent } = useAppContext()
-
+  const { list, setList } = useAppContext()
+  const [value, setValue] = useState()
   const InputSchema = yup.object().shape({
     studentCode: yup.string().min(6).max(6).required("Please enter student code!"),
     studentName: yup.string().min(6).max(50).required("Please enter student name!"),
@@ -15,7 +15,6 @@ function InputForm() {
     chemistry: yup.number().required("Chemistry score required!"),
   })
 
-  console.log("hehe", getListStudent)
   return (
     <div>
       <Formik
@@ -29,10 +28,14 @@ function InputForm() {
         }}
         validationSchema={InputSchema}
         onSubmit={(values) => {
-          setListStudent(...getListStudent, values)
+          const a = Number(values.math)
+          const b = Number(values.physics)
+          const c = Number(values.chemistry)
+          const averageScore = (a + b + c) / 3
+          setList([...list, { ...values, averageScore }])
         }}
       >
-        {({ errors, touched }) => (
+        {({ errors, touched, values }) => (
           <Form className="flex flex-col">
             <div className="flex justify-around">
               <div>
@@ -41,6 +44,7 @@ function InputForm() {
                     Student Code
                   </label>
                   <Field
+                    value={values.studentCode}
                     name="studentCode"
                     placeholder="Student Code"
                     className="input input-bordered w-96 max-w-xs mb-5"
