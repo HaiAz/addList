@@ -2,6 +2,7 @@ import { useState } from "react"
 import { arrayMoveImmutable } from "array-move"
 import { Formik, Form, Field, useFormik } from "formik"
 import * as yup from "yup"
+import InputForm from "./InputForm"
 
 function App() {
   const [list, setList] = useState([])
@@ -25,13 +26,9 @@ function App() {
     },
 
     validationSchema: yup.object().shape({
-      studentCode: yup
-        .number()
-        .min(6, "Student code must be 6 characters!")
-        .max(6, "Student code must be 6 characters!")
-        .required("Please enter student code!"),
-      studentName: yup.string().min(6).max(50, "Too long!").required("Please enter student name!"),
-      className: yup.string().min(3).max(50).required("Please enter class!"),
+      studentCode: yup.string().min(6).max(6).required("Please enter student code!"),
+      studentName: yup.string().min(6).max(50).required("Please enter student name!"),
+      className: yup.string().max(50).required("Please enter class!"),
       math: yup.number().required("Math score required!"),
       physics: yup.number().required("Math physics required!"),
       chemistry: yup.number().required("Chemistry score required!"),
@@ -166,110 +163,7 @@ function App() {
   return (
     <div className="App font-mono">
       {/* Form input */}
-      <form onSubmit={formik.handleSubmit}>
-        <div className="flex justify-around w-screen">
-          <div>
-            {/* Student Code */}
-            <div className="form-control w-full max-w-xs">
-              <label className="label" htmlFor="studentCode">
-                Student Code
-              </label>
-              <input
-                id="studentCode"
-                name="studentCode"
-                value={formik.values.studentCode}
-                onChange={formik.handleChange}
-                type="text"
-                placeholder="Student Code"
-                className="input input-bordered w-96 max-w-xs mb-5"
-              />
-            </div>
-
-            {/* Student Name */}
-            <div className="form-control w-full max-w-xs">
-              <label className="label" htmlFor="studentName">
-                Name
-              </label>
-              <input
-                id="studentName"
-                name="studentName"
-                value={formik.values.studentName}
-                onChange={formik.handleChange}
-                type="text"
-                placeholder="Student Name"
-                className="input input-bordered w-96 max-w-xs mb-5"
-              />
-            </div>
-
-            {/* Class Name */}
-            <div className="form-control w-full max-w-xs">
-              <label className="label" htmlFor="className">
-                Class
-              </label>
-              <input
-                id="className"
-                name="className"
-                value={formik.values.className}
-                onChange={formik.handleChange}
-                type="text"
-                placeholder="Class"
-                className="input input-bordered w-96 max-w-xs mb-5"
-              />
-            </div>
-          </div>
-          <div>
-            {/* Math Score */}
-            <div className="form-control w-full max-w-xs">
-              <label className="label">
-                <span className="label-text">Math Score</span>
-              </label>
-              <input
-                name="math"
-                value={formik.values.math}
-                onChange={formik.handleChange}
-                type="text"
-                placeholder="Math Score"
-                className="input input-bordered w-96 max-w-xs mb-5"
-              />
-            </div>
-
-            {/* Physics Score */}
-            <div className="form-control w-full max-w-xs">
-              <label className="label">
-                <span className="label-text">Physics Score</span>
-              </label>
-              <input
-                name="physics"
-                value={formik.values.physics}
-                onChange={formik.handleChange}
-                type="text"
-                placeholder="Physics Score"
-                className="input input-bordered w-96 max-w-xs mb-5"
-              />
-            </div>
-
-            {/* Chemistry Score */}
-            <div className="form-control w-full max-w-xs">
-              <label className="label">Chemistry Score</label>
-              <input
-                name="chemistry"
-                value={formik.values.chemistry}
-                onChange={formik.handleChange}
-                type="text"
-                placeholder="Physics Score"
-                className="input input-bordered w-96 max-w-xs mb-5"
-              />
-            </div>
-          </div>
-        </div>
-        <input
-          type="submit"
-          className="btn btn-outline w-64 flex mx-auto"
-          id="Add"
-          name="Add"
-          value="Add"
-        />
-      </form>
+      <InputForm />
 
       <div className="flex justify-center mt-5">
         <div className="mr-40">
