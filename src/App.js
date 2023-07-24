@@ -15,31 +15,6 @@ function App() {
     chemistry: "",
   })
 
-  const formik = useFormik({
-    initialValues: {
-      studentCode: "",
-      studentName: "",
-      className: "",
-      math: "",
-      physics: "",
-      chemistry: "",
-    },
-
-    validationSchema: yup.object().shape({
-      studentCode: yup.string().min(6).max(6).required("Please enter student code!"),
-      studentName: yup.string().min(6).max(50).required("Please enter student name!"),
-      className: yup.string().max(50).required("Please enter class!"),
-      math: yup.number().required("Math score required!"),
-      physics: yup.number().required("Math physics required!"),
-      chemistry: yup.number().required("Chemistry score required!"),
-    }),
-
-    onSubmit: (values) => {
-      console.log("123123")
-      console.log("values: ", values)
-    },
-  })
-
   //get input value and set value to student info
   const handleChange = (e) => {
     const { name, value } = e.target

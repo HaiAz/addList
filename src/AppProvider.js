@@ -1,21 +1,23 @@
-import React, { useState, createContext, useContext } from "react"
+import React, { Children, useState, createContext, useContext } from "react"
 
-export const appContext = createContext()
+export const AppContext = createContext()
 
 function AppProvider({ children }) {
   const [list, setList] = useState([])
 
-  const get = () => list
-  const set = (value) => setList(value)
+  const getListStudent = () => list
+  const setListStudent = (value) => setList(value)
 
-  return <appContext.Provider value={{ get, set }}>{children}</appContext.Provider>
+  return (
+    <AppContext.Provider value={{ getListStudent, setListStudent }}>{children}</AppContext.Provider>
+  )
 }
 
 export const useAppContext = () => {
-  const { get, set } = useContext(appContext)
+  const { getListStudent, setListStudent } = useContext(AppContext)
   return {
-    get,
-    set,
+    getListStudent,
+    setListStudent,
   }
 }
 

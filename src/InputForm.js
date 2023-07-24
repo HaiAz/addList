@@ -1,8 +1,11 @@
 import React from "react"
 import { Formik, Form, Field, useFormik } from "formik"
 import * as yup from "yup"
+import useAppContext from "./AppProvider"
 
 function InputForm() {
+  const { getListStudent, setListStudent } = useAppContext()
+
   const InputSchema = yup.object().shape({
     studentCode: yup.string().min(6).max(6).required("Please enter student code!"),
     studentName: yup.string().min(6).max(50).required("Please enter student name!"),
@@ -12,30 +15,7 @@ function InputForm() {
     chemistry: yup.number().required("Chemistry score required!"),
   })
 
-  const formik = useFormik({
-    initialValues: {
-      studentCode: "",
-      studentName: "",
-      className: "",
-      math: "",
-      physics: "",
-      chemistry: "",
-    },
-
-    validationSchema: yup.object().shape({
-      studentCode: yup.string().min(6).max(6).required("Please enter student code!"),
-      studentName: yup.string().min(6).max(50).required("Please enter student name!"),
-      className: yup.string().max(50).required("Please enter class!"),
-      math: yup.number().required("Math score required!"),
-      physics: yup.number().required("Math physics required!"),
-      chemistry: yup.number().required("Chemistry score required!"),
-    }),
-
-    onSubmit: (values) => {
-      console.log("123123")
-      console.log("values: ", values)
-    },
-  })
+  console.log("hehe", getListStudent)
   return (
     <div>
       <Formik
@@ -49,8 +29,7 @@ function InputForm() {
         }}
         validationSchema={InputSchema}
         onSubmit={(values) => {
-          // same shape as initial values
-          console.log(values)
+          setListStudent(...getListStudent, values)
         }}
       >
         {({ errors, touched }) => (
