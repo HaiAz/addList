@@ -75,7 +75,6 @@ function App() {
           </button>
         </div>
       </div>
-      <List />
     </div>
   )
 }

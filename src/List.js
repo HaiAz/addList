@@ -1,8 +1,10 @@
 import React, { useState } from "react"
 import { arrayMoveImmutable } from "array-move"
 import { useAppContext } from "./context/AppProvider"
+import InputForm from "./InputForm"
 function List() {
   const { list, setList } = useAppContext()
+  const [studentInfo, setStudentInfo] = useState()
 
   //delete item in arr
   const deleteItem = (id) => {
@@ -14,9 +16,8 @@ function List() {
 
   //edit select item value
   const editItem = (id) => {
-    const studentInfo = list.find((item) => item.studentCode === id)
-
-    console.log("student info: ", studentInfo)
+    const findInfo = list.find((item) => item.studentCode === id)
+    setStudentInfo(findInfo)
   }
 
   const handleArrangeList = (value) => {
@@ -62,6 +63,7 @@ function List() {
   }
   return (
     <div>
+      <InputForm />
       {!!list?.length && (
         <div className="text-center mt-5 uppercase font-bold">
           <p className="text-2xl">list Element</p>

@@ -27,12 +27,18 @@ function InputForm() {
           chemistry: "",
         }}
         validationSchema={InputSchema}
-        onSubmit={(values) => {
+        onSubmit={(values, actions) => {
           const a = Number(values.math)
           const b = Number(values.physics)
           const c = Number(values.chemistry)
           const averageScore = (a + b + c) / 3
           setList([...list, { ...values, averageScore }])
+          actions.setFieldValue("studentCode", "")
+          actions.setFieldValue("studentName", "")
+          actions.setFieldValue("className", values.className)
+          actions.setFieldValue("math", "")
+          actions.setFieldValue("physics", "")
+          actions.setFieldValue("chemistry", "")
         }}
       >
         {({ errors, touched, values }) => (
@@ -59,6 +65,7 @@ function InputForm() {
                     Student Name
                   </label>
                   <Field
+                    value={values.studentName}
                     name="studentName"
                     placeholder="Student Name"
                     className="input input-bordered w-96 max-w-xs mb-5"
@@ -73,6 +80,7 @@ function InputForm() {
                     Class
                   </label>
                   <Field
+                    value={values.className}
                     name="className"
                     placeholder="Class"
                     className="input input-bordered w-96 max-w-xs mb-5"
@@ -89,6 +97,7 @@ function InputForm() {
                     Math Score
                   </label>
                   <Field
+                    value={values.math}
                     name="math"
                     placeholder="Math Score"
                     className="input input-bordered w-96 max-w-xs mb-5"
@@ -103,6 +112,7 @@ function InputForm() {
                     Physics Score
                   </label>
                   <Field
+                    value={values.physics}
                     name="physics"
                     placeholder="Physics Score"
                     className="input input-bordered w-96 max-w-xs mb-5"
@@ -117,6 +127,7 @@ function InputForm() {
                     Chemistry Score
                   </label>
                   <Field
+                    value={values.chemistry}
                     name="chemistry"
                     placeholder="Chemistry Score"
                     className="input input-bordered w-96 max-w-xs mb-5"
